@@ -1,0 +1,12 @@
+.big {
+    margin-top: 30px;
+
+    width: 100%;
+}
+
+.big__slide {
+    display: inline-block;
+    text-align: justify;
+    white-space: nowrap;
+    padding-right: 10px;
+}

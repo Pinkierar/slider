@@ -1,0 +1,17 @@
+.imgs__slide {
+    margin-top: 30px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding-right: 10px;
+}
+
+.imgs__title {
+    text-align: center;
+}
+
+.imgs__image {
+    border-radius: 10px;
+}

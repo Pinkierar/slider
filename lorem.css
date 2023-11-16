@@ -1,0 +1,21 @@
+.lorem {
+    margin-top: 30px;
+}
+
+.lorem__slide {
+    padding-right: 10px;
+}
+
+.lorem__content {
+    height: 100%;
+    padding: 10px 30px;
+
+    background-color: #2b2d30;
+    border: solid 1px #1d1e21;
+
+    border-radius: 10px;
+}
+
+.lorem__title {
+    color: #e6bd69;
+}
