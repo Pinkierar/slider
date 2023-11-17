@@ -4,6 +4,10 @@
     width: 100%;
 }
 
+.big__conveyor {
+     transition: 1600ms;
+ }
+
 .big__slide {
     display: inline-block;
     text-align: justify;

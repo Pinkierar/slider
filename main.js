@@ -19,6 +19,7 @@ function main() {
     const separatorClone = separator.cloneNode(true);
 
     let isDrag = false;           // Перетаскивание ли
+    let sliderPosition = 0;       // Позиция слайдера по оси X
     let separatorWidth = 0;       // Ширина разделителя
     let pointerPosition = 0;      // Позиция указателя по оси X
     let pointerPrevPosition = 0;  // Предыдущая позиция указателя по оси X
@@ -33,37 +34,14 @@ function main() {
     }
     conveyor.append(separatorClone);
 
-    // Событие изменения размера окна
-    const resizeHandler = () => {
-
-      // Общая ширина всех оригинальных слайдов
-      const slidesWidth = slides.reduce((width, slide) => {
-        const slideWidth = slide.getBoundingClientRect().width;
-
-        return width + slideWidth;
-      }, 0);
-
-      conveyorWidth = conveyor.getBoundingClientRect().width;
-      separatorWidth = conveyorWidth - slidesWidth;
-
-      separatorClone.style.width = separator.style.width = `${separatorWidth}px`;
+    // Рендер позиции конвейера
+    const render = (noTransition = false) => {
+      conveyor.style.transition = noTransition || isDrag ? 'none' : '';
+      conveyor.style.transform = `translateX(${conveyorPosition}px)`;
     };
-    window.addEventListener('resize', resizeHandler);
-    window.setTimeout(resizeHandler, 100); // Стили рендерятся с задержкой
-    resizeHandler();
 
-    // Событие нажатия
-    slider.addEventListener('pointerdown', event => {
-      pointerPrevPosition = event.pageX;
-
-      isDrag = true;
-    });
-
-    // Событие движения
-    window.addEventListener('pointermove', event => {
-      if (!isDrag) return;
-
-      pointerPosition = event.pageX;
+    // Обновление позиции конвейера
+    const updateConveyorPosition = () => {
 
       // Смещение курсора вычитается из текущей позиции конвейера
       const pointerOffset = pointerPrevPosition - pointerPosition;
@@ -84,20 +62,72 @@ function main() {
       // а сам конвейер сместится влево на ширину перемещённого элемента
       const lastItem = conveyor.lastElementChild;
       const lastWidth = lastItem.getBoundingClientRect().width;
-      if (conveyorPosition > 0) {
+      if (conveyorPosition >= 0) {
         conveyorPosition -= lastWidth;
         conveyor.prepend(lastItem);
       }
+    };
 
-      // Рендер позиции конвейера
-      conveyor.style.transform = `translateX(${conveyorPosition}px)`;
+    // Событие изменения размера окна
+    const resizeHandler = () => {
+      // Общая ширина всех оригинальных слайдов
+      const slidesWidth = slides.reduce((width, slide) => {
+        const slideWidth = slide.getBoundingClientRect().width;
+
+        return width + slideWidth;
+      }, 0);
+
+      sliderPosition = slider.getBoundingClientRect().left;
+      conveyorWidth = conveyor.getBoundingClientRect().width;
+      separatorWidth = (conveyorWidth - slidesWidth * 2) / 2;
+
+      separatorClone.style.width = separator.style.width = `${separatorWidth}px`;
+    };
+    window.addEventListener('resize', resizeHandler);
+
+    // Инициализация начального состояния слайдера
+    const init = () => {
+      resizeHandler();
+      updateConveyorPosition();
+
+      render(true);
+    };
+    init();
+    window.setTimeout(init, 100); // Стили рендерятся с задержкой
+
+    // Событие нажатия
+    slider.addEventListener('pointerdown', event => {
+      pointerPrevPosition = event.pageX;
+
+      isDrag = true;
+    });
+
+    // Событие движения
+    window.addEventListener('pointermove', event => {
+      if (!isDrag) return;
+
+      pointerPosition = event.pageX;
+
+      updateConveyorPosition();
 
       pointerPrevPosition = pointerPosition;
+
+      render();
     });
 
     // Событие отпускания
     window.addEventListener('pointerup', () => {
       isDrag = false;
+
+      const second = conveyor.children[1];
+      const target = second === separator || second === separatorClone
+        ? (conveyor.children[2] ?? conveyor.children[0])
+        : second;
+      const targetPosition = target.getBoundingClientRect().left;
+      const sliderOffset = targetPosition - sliderPosition;
+      conveyorPosition -= sliderOffset;
+
+      render();
     });
   });
 }

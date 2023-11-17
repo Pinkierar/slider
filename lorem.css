@@ -2,6 +2,10 @@
     margin-top: 30px;
 }
 
+.lorem__conveyor {
+    transition: 300ms;
+}
+
 .lorem__slide {
     padding-right: 10px;
 }

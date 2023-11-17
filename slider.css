@@ -2,6 +2,7 @@
     user-select: none;
     overflow: hidden;
 }
+
 .slider * {
     pointer-events: none;
 }
@@ -12,4 +13,8 @@
 
     display: flex;
     flex-direction: row;
+}
+
+.slider-separator {
+    opacity: 0;
 }
